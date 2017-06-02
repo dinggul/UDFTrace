@@ -1,24 +1,24 @@
-- newList:
-    - 0x400606
-    - []
-    - u64
+- - newList
+  - 0x400606
+  - []
+  - u64
 
-- listLen:
-    - 0x40062d
-    - [u64]
-    - u32
+- - listLen
+  - 0x40062d
+  - [u64]
+  - u32
 
-- addItem:
-    - 0x400665
-    - [u64, int]
-    - [void]
+- - addItem
+  - 0x400665
+  - [u64, u32]
+  - void
 
-- getItem:
-    - 0x4006d8
-    - [u64, int]
-    - [int]
+- - getItem
+  - 0x4006d8
+  - [u64, u32]
+  - u32
 
-- fibo:
-    - 0x400730
-    - [u64, int]
-    - [int]
+- - fibo
+  - 0x400730
+  - [u64, u32]
+  - u32
