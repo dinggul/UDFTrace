@@ -5,5 +5,6 @@ user defined function tracer
 - Python2
 - PyYAML
 - libyaml-cpp-dev (0.5.2)
+- libboost-dev
 
 ### made by dinggul, blukat29
