@@ -1,6 +1,7 @@
 #include "pin.H"
 #include <iostream>
 #include <fstream>
+using namespace std;
 
 INT32 Usage() {
     cerr << "nono" << endl;
