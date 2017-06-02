@@ -134,8 +134,8 @@ def save_debug_dump(debug_info):
     return
 
 def main():
-    inp_name = 'input.yaml' if len(sys.argv) < 2 else sys.argv[1]
-    out_name = 'output.yaml' if len(sys.argv) < 3 else sys.argv[2]
+    inp_name = 'input.yml' if len(sys.argv) < 2 else sys.argv[1]
+    out_name = 'output.yml' if len(sys.argv) < 3 else sys.argv[2]
 
     with open(inp_name, 'r') as f:
         debug_info = y_load(f.read())
