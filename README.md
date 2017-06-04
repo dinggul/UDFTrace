@@ -18,7 +18,7 @@ Currently for x86-64.
 
 ### Test
 
-    ./pin*/pin -t src/UDFTrace.so -- ./testprog/test1
+    ./pin*/pin -t src/UDFTrace.so -- ./test/test1
 
 ### Intermediate trace format
 
