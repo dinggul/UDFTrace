@@ -1,6 +1,8 @@
 # UDFTrace
 
-user defined function tracer
+User defined function tracer
+
+Currently for x86-64.
 
 ### Prerequisites
 
@@ -18,4 +20,24 @@ user defined function tracer
 
     ./pin*/pin -t src/UDFTrace.so -- ./testprog/test1
 
-### made by dinggul, blukat29
+### Intermediate trace format
+
+```c
+struct type {
+    uint8_t kind;       // argument type.
+    uint8_t location;   // argument location (stack or register).
+    uint16_t stack_ofs; // used for stack arguments.
+    uint32_t mem_size;  // used for memory arguments.
+};
+
+struct func {
+    uint64_t addr;
+    uint32_t nargs;
+    struct type ret_ty;
+    struct type arg_ty[0]; // 'nargs' elements.
+};
+```
+
+### Credits
+
+made by dinggul, blukat29
