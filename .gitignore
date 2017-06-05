@@ -1,3 +1,5 @@
 *.swp
 pin-3.2*
 *.log
+obj-intel64/
+obj-ia32/
