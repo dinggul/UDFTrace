@@ -12,9 +12,16 @@ INT32 Usage() {
     return -1;
 }
 
-VOID showcall(ADDRINT addr)
+VOID showcall(CONTEXT* ctx)
 {
+    ADDRINT addr = (ADDRINT)PIN_GetContextReg(ctx, REG_INST_PTR);
     cout << "call " << addr << endl;
+    for (int reg = REG_GR_BASE; reg <= REG_GR_LAST; reg ++)
+    {
+        ADDRINT val;
+        PIN_GetContextRegval(ctx, (REG)reg, reinterpret_cast<UINT8*>(&val));
+        cout << REG_StringShort((REG)reg) << ": " << val << endl;
+    }
 }
 
 VOID Trace(TRACE trace, VOID* v)
@@ -28,8 +35,7 @@ VOID Trace(TRACE trace, VOID* v)
             if (spec->funcs[i].addr == addr) {
                 cout << "Instrumenting " << addr << endl;
                 BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)showcall,
-                        IARG_ADDRINT, addr,
-                        IARG_END);
+                        IARG_CONST_CONTEXT, IARG_END);
             }
         }
     }
