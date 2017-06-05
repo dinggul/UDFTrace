@@ -29,7 +29,7 @@ typedef enum {
     UDF_R12   = 13,
     UDF_R13   = 14,
     UDF_R14   = 15,
-    UDF_RS5   = 16,
+    UDF_R15   = 16,
 } UDFTypeLoc;
 
 typedef struct {
@@ -39,13 +39,15 @@ typedef struct {
     uint32_t size;  // used for type = memory arguments.
 } UDFType;
 
+#define UDF_ARG_MAX 6
+
 typedef struct {
     uint64_t addr;
     UDFType ret;
-    UDFType args[6];   // Maximum 6 arguments.
+    UDFType args[UDF_ARG_MAX]; // Maximum 6 arguments.
 } UDFFunc;
 
 typedef struct {
     uint64_t nfuncs;
-    UDFFunc funcs[0];    // 'nfuncs' elements.
+    UDFFunc funcs[0]; // 'nfuncs' elements.
 } UDFSpec;
