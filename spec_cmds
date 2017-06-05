@@ -1,0 +1,35 @@
+../run_base_test_gcc43-64bit.0002/perlbench_base.gcc43-64bit -I. -I./lib test.pl
+./400.perlbench/exe/perlbench_base.gcc43-64bit -I./400.perlbench/run/run_base_test_gcc43-64bit.0000 -I./400.perlbench/run/run_base_test_gcc43-64bit.0000 ./400.perlbench/run/run_base_test_gcc43-64bit.0000/test.pl
+
+./benchspec/CPU2006/401.bzip2/exe
+./bzip2_base.gcc43-64bit ../data/test/input/dryer.jpg 2
+
+./benchspec/CPU2006/403.gcc/exe
+./gcc_base.gcc43-64bit ../data/test/input/cccp.in -o /dev/null
+
+./benchspec/CPU2006/429.mcf/exe
+./mcf_base.gcc43-64bit ../data/test/input/inp.in
+
+./benchspec/CPU2006/445.gobmk/exe
+./gobmk_base.gcc43-64bit --quiet -l ../data/all/input/games/owl02.sgf
+
+./benchspec/CPU2006/456.hmmer/exe
+./hmmer_base.gcc43-64bit --fixed 0 --mean 325 --num 45000 --sd 200 --seed 0 ../data/test/input/bombesin.hmm
+
+./benchspec/CPU2006/458.sjeng/exe
+./sjeng_base.gcc43-64bit ../data/test/input/test.txt
+
+./benchspec/CPU2006/462.libquantum/exe
+./libquantum_base.gcc43-64bit 200 8
+
+./benchspec/CPU2006/464.h264ref/data/all/input
+../../../exe/h264ref_base.gcc43-64bit -d ../../test/input/foreman_test_encoder_baseline.cfg
+
+./benchspec/CPU2006/471.omnetpp/data/test/input
+../../../exe/omnetpp_base.gcc43-64bit omnetpp.ini
+
+./benchspec/CPU2006/473.astar/data/test/input
+../../../exe/astar_base.gcc43-64bit lake.cfg
+
+./benchspec/CPU2006/483.xalancbmk/exe
+./Xalan_base.gcc43-64bit -v ../data/ref/input/t5.xml ../data/ref/input/xalanc.xsl
