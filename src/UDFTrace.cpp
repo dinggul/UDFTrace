@@ -117,7 +117,6 @@ static UDFSpec* loadSpec(const string& filename)
 {
     UDFSpec* spec = NULL;
 
-    cout << "hihi " << filename << endl;
     if (filename.empty()) {
         int nfuncs = 1;
         spec = (UDFSpec*) malloc(sizeof(UDFSpec) + nfuncs * sizeof(UDFFunc));
