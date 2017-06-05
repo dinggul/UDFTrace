@@ -31,14 +31,18 @@ INT32 Usage() {
     return -1;
 }
 
-VOID Routine(RTN rtn, VOID* v)
+VOID Trace(TRACE trace, VOID* v)
 {
     UDFSpec* spec = (UDFSpec*)v;
-    ADDRINT addr = RTN_Address(rtn);
-    for (unsigned int i = 0; i < spec->nfuncs; i ++) {
-        if (spec->funcs[i].addr == addr) {
-            cout << "Instrumenting " << addr << endl;
-            break;
+
+    for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
+    {
+        ADDRINT addr = BBL_Address(bbl);
+        for (unsigned int i = 0; i < spec->nfuncs; i ++) {
+            if (spec->funcs[i].addr == addr) {
+                cout << "Instrumenting " << addr << endl;
+                break;
+            }
         }
     }
 }
@@ -57,9 +61,8 @@ int main(int argc, char *argv[]) {
     spec->funcs[0].addr = 0x400526; // test2 / fibo()
     spec->funcs[0].nargs = 1;
 
-    RTN_AddInstrumentFunction(Routine, spec);
+    TRACE_AddInstrumentFunction(Trace, spec);
 
-    PIN_InitSymbols();
     PIN_StartProgram();
     return 0;
 }
