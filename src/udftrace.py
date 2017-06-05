@@ -4,6 +4,8 @@ from struct import pack
 import colorlog
 import sys, os, re
 
+UDF_ARG_MAX = 6
+
 log_fmt = colorlog.ColoredFormatter(
         '[%(log_color)s%(levelname)s%(reset)s|%(filename)s:%(lineno)s] %(asctime)s > %(message)s',
         datefmt=None,
@@ -88,47 +90,7 @@ def save_debug_dump(debug_info):
 
         # start of dumping
 
-        fp.write(pack("<B", len(di[2])))    # number of argument
-        fp.write(pack("<Q", di[1]))         # function address
-
-        for arg in di[2]:                   # function arguments
-            for i, enum in enumerate(ENUMS):
-                if re.match(enum, arg):
-                    break
-            fp.write(pack("<B", i))
-
-            if 'mem' in arg:
-                dump_length = re.findall(enum, arg)[0]
-                if dump_length.startswith('0x'):
-                    dump_length = int(dump_length, 16)
-                else:
-                    dump_length = int(dump_length)
-
-                if dump_length >= 2 ** 32:
-                    logger.error('invalid format(too long dump size) -- {}'.format(di))
-                    fp.close()
-                    os._exit(1)
-
-                fp.write(pack("<I", dump_length))
-
-        for i, enum in enumerate(ENUMS):    # return value
-            if re.match(enum, di[3]):
-                break
-        fp.write(pack("<B", i))
-
-        if 'mem' in di[3]:
-            dump_length = re.findall(enum, di[3])[0]
-            if dump_length.startswith('0x'):
-                dump_length = int(dump_length, 16)
-            else:
-                dump_length = int(dump_length)
-
-            if dump_length >= 2 ** 32:
-                logger.error('invalid format(too long dump size) -- {}'.format(di))
-                fp.close()
-                os._exit(1)
-
-            fp.write(pack("<I", dump_length))
+        # end of dumping
 
     fp.close()
     return
