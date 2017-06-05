@@ -57,7 +57,10 @@ int main(int argc, char *argv[])
     UDFSpec* spec = (UDFSpec*) malloc(sizeof(UDFSpec) + nfuncs * sizeof(UDFFunc));
     spec->nfuncs = nfuncs;
     spec->funcs[0].addr = 0x400526; // test2 / fibo()
-    spec->funcs[0].nargs = 1;
+    spec->funcs[0].ret.kind = UDF_I64;
+    spec->funcs[0].ret.loc = UDF_RAX;
+    spec->funcs[0].args[0].kind = UDF_I64;
+    spec->funcs[0].args[0].loc = UDF_RDI;
 
     TRACE_AddInstrumentFunction(Trace, spec);
 
