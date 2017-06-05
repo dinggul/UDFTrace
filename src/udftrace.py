@@ -42,7 +42,7 @@ ENUMS = [
     r'mem\((0x[a-f0-9])+\)',
 ]
 
-def mk_UDFArg(arg_type, nth_arg=0): # nth_arg == 0 for return value
+def mk_UDFArg(arg_type, nth_arg): # nth_arg == 0 for return value
     '''
     typedef struct {
         uint8_t type;   // argument type.
@@ -54,7 +54,7 @@ def mk_UDFArg(arg_type, nth_arg=0): # nth_arg == 0 for return value
     assert nth_arg <= UDF_ARG_MAX
     matching_res = [0 if i is None else 1 for i in
                         map(lambda x: re.match(x, arg_type), ENUMS)]
-    type_enum = matching_res.find(1)
+    type_enum = matching_res.index(1)
 
     # set loc following linux x64 argument passing
     loc = 1
@@ -140,13 +140,13 @@ def save_debug_dump(debug_info):
         # start of dumping
 
         fp.write(pack('<Q', di[1]))                                 # address
-        fp.write(mk_UDFArg(di[3]))                                  # ret
+        fp.write(mk_UDFArg(di[3], 0))                               # ret
 
-        for nth_arg in xrange(1, MAX_UDF_ARG+1):                    # args
+        for nth_arg in xrange(1, UDF_ARG_MAX+1):                    # args
             if len(di[2]) >= nth_arg:
-                fp.write(mk_UDFArg(di[2][nth_arg-1]), nth_arg)
+                fp.write(mk_UDFArg(di[2][nth_arg-1], nth_arg))
             else:
-                fp.write(mk_UDFArg('void', nth_arg)
+                fp.write(mk_UDFArg('void', nth_arg))
 
         # end of dumping
 
