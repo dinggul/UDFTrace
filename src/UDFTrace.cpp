@@ -7,19 +7,15 @@
 #include "pin.H"
 #include "spec.h"
 
-#ifndef TRACE_RETURNS
-#define TRACE_RETURNS 1
-#endif
-
 using namespace std;
 
+KNOB<string> KnobInputFile(KNOB_MODE_WRITEONCE, "pintool",
+        "i", "", "Trace spec file name");
 static ostream& of = cout;
-#if TRACE_RETURNS
-static vector<UDFFunc*> call_stack;
-#endif
 
 INT32 Usage() {
-    cerr << "(Usage)" << endl;
+    cerr << "User Defined Function Trace (UDFTrace)" << endl;
+    cerr << KNOB_BASE::StringKnobSummary() << endl;
     return -1;
 }
 
@@ -85,7 +81,7 @@ VOID handleDirectCall(CONTEXT* ctx, VOID* v)
     of << ")" << endl;
 }
 
-static UDFFunc* lookup_spec(UDFSpec* spec, ADDRINT addr)
+static UDFFunc* lookupSpec(UDFSpec* spec, ADDRINT addr)
 {
     for (unsigned int i = 0; i < spec->nfuncs; i ++) {
         if (spec->funcs[i].addr == addr) {
@@ -104,7 +100,7 @@ VOID Trace(TRACE trace, VOID* v)
         INS tail = BBL_InsTail(bbl);
         if (INS_IsDirectCall(tail)) {
             ADDRINT target = INS_DirectBranchOrCallTargetAddress(tail);
-            UDFFunc* func = lookup_spec(spec, target);
+            UDFFunc* func = lookupSpec(spec, target);
             if (func) {
                 INS_InsertCall(tail, IPOINT_BEFORE,
                         (AFUNPTR)handleDirectCall,
@@ -117,6 +113,40 @@ VOID Trace(TRACE trace, VOID* v)
     }
 }
 
+static UDFSpec* loadSpec(const string& filename)
+{
+    UDFSpec* spec = NULL;
+
+    cout << "hihi " << filename << endl;
+    if (filename.empty()) {
+        int nfuncs = 1;
+        spec = (UDFSpec*) malloc(sizeof(UDFSpec) + nfuncs * sizeof(UDFFunc));
+        spec->nfuncs = nfuncs;
+        spec->funcs[0].addr = 0x400526; // test2 / fibo()
+        spec->funcs[0].ret.type = UDF_I64;
+        spec->funcs[0].ret.loc = UDF_RAX;
+        for (int i = 0; i < UDF_ARG_MAX; i ++)
+            spec->funcs[0].args[i].type = UDF_VOID;
+        spec->funcs[0].args[0].type = UDF_I64;
+        spec->funcs[0].args[0].loc = UDF_RDI;
+        return spec;
+    }
+    else {
+        ifstream file(filename.c_str(), ios::binary | ios::ate);
+        if (!file.is_open()) {
+            cerr << "Cannot open file '" << filename << "'" << endl;
+            return NULL;
+        }
+
+        streamsize size = file.tellg();
+        file.seekg(0, ios::beg);
+
+        spec = (UDFSpec*) malloc(size);
+        file.read((char*)spec, size);
+        return spec;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     assert(sizeof(UDFArg) == 8 || "UDFArg is 8 bytes long");
@@ -125,16 +155,10 @@ int main(int argc, char *argv[])
     if(PIN_Init(argc, argv))
         return Usage();
 
-    int nfuncs = 1;
-    UDFSpec* spec = (UDFSpec*) malloc(sizeof(UDFSpec) + nfuncs * sizeof(UDFFunc));
-    spec->nfuncs = nfuncs;
-    spec->funcs[0].addr = 0x400526; // test2 / fibo()
-    spec->funcs[0].ret.type = UDF_I64;
-    spec->funcs[0].ret.loc = UDF_RAX;
-    for (int i = 0; i < UDF_ARG_MAX; i ++)
-        spec->funcs[0].args[i].type = UDF_VOID;
-    spec->funcs[0].args[0].type = UDF_I64;
-    spec->funcs[0].args[0].loc = UDF_RDI;
+    UDFSpec* spec = loadSpec(KnobInputFile.Value());
+
+    if (spec == NULL)
+        return Usage();
 
     of << showbase << hex;
 
