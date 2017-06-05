@@ -2,13 +2,21 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <vector>
 
 #include "pin.H"
 #include "spec.h"
 
+#ifndef TRACE_RETURNS
+#define TRACE_RETURNS 1
+#endif
+
 using namespace std;
 
 static ostream& of = cout;
+#if TRACE_RETURNS
+static vector<UDFFunc*> call_stack;
+#endif
 
 INT32 Usage() {
     cerr << "(Usage)" << endl;
