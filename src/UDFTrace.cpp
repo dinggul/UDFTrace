@@ -8,6 +8,8 @@
 
 using namespace std;
 
+static ostream& of = cout;
+
 INT32 Usage() {
     cerr << "(Usage)" << endl;
     return -1;
@@ -53,22 +55,26 @@ static ADDRINT getArg(CONTEXT* ctx, UDFType* ty)
 VOID showcall(CONTEXT* ctx, VOID* v)
 {
     UDFFunc* func = (UDFFunc*)v;
-    cout << "call " << func->addr << endl;
+    of << "sub_" << func->addr << " (";
 
     for (int i = 0; i < UDF_ARG_MAX; i ++)
     {
         if (func->args[i].kind == UDF_VOID)
             break;
+        if (i > 0)
+            of << ", ";
         switch (func->args[i].kind)
         {
             case UDF_I64:
             case UDF_U64:
-                cout << "  " << hex << getArg(ctx, &func->args[i]) << endl;
+                of << getArg(ctx, &func->args[i]);
                 break;
             default:
                 cerr << "Cannot handle arg type " << func->args[i].kind << endl;
+                return;
         }
     }
+    of << ")" << endl;
 }
 
 VOID Trace(TRACE trace, VOID* v)
@@ -80,7 +86,6 @@ VOID Trace(TRACE trace, VOID* v)
         ADDRINT addr = BBL_Address(bbl);
         for (unsigned int i = 0; i < spec->nfuncs; i ++) {
             if (spec->funcs[i].addr == addr) {
-                cout << "Instrumenting " << addr << endl;
                 BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)showcall,
                         IARG_CONST_CONTEXT,
                         IARG_PTR, (VOID*)&spec->funcs[i],
@@ -108,6 +113,8 @@ int main(int argc, char *argv[])
         spec->funcs[0].args[i].kind = UDF_VOID;
     spec->funcs[0].args[0].kind = UDF_I64;
     spec->funcs[0].args[0].loc = UDF_RDI;
+
+    of << showbase << hex;
 
     TRACE_AddInstrumentFunction(Trace, spec);
 
