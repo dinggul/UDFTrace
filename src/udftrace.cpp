@@ -31,6 +31,11 @@ INT32 Usage() {
     return -1;
 }
 
+VOID showcall(ADDRINT addr)
+{
+    cout << "call " << addr << endl;
+}
+
 VOID Trace(TRACE trace, VOID* v)
 {
     UDFSpec* spec = (UDFSpec*)v;
@@ -41,7 +46,9 @@ VOID Trace(TRACE trace, VOID* v)
         for (unsigned int i = 0; i < spec->nfuncs; i ++) {
             if (spec->funcs[i].addr == addr) {
                 cout << "Instrumenting " << addr << endl;
-                break;
+                BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)showcall,
+                        IARG_ADDRINT, addr,
+                        IARG_END);
             }
         }
     }
