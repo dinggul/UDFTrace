@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -41,10 +42,13 @@ VOID Trace(TRACE trace, VOID* v)
     }
 }
 
-int main(int argc, char *argv[]) {
-    if( PIN_Init(argc, argv) ) {
+int main(int argc, char *argv[])
+{
+    assert(sizeof(UDFType) == 8 || "UDFType is 8 bytes long");
+    assert(sizeof(UDFFunc) == 64 || "UDFFunc is 64 bytes long");
+
+    if(PIN_Init(argc, argv))
         return Usage();
-    }
 
     cout << hex;
     cout.setf(ios::showbase);

@@ -10,12 +10,11 @@ typedef struct {
 
 typedef struct {
     uint64_t addr;
-    uint64_t nargs;
     UDFType ret_ty;
-    UDFType arg_ty[0]; // 'nargs' elements.
+    UDFType arg_ty[6];   // Maximum 6 arguments.
 } UDFFunc;
 
 typedef struct {
     uint64_t nfuncs;
-    UDFFunc funcs[0]; // 'nfuncs' elements.
+    UDFFunc funcs[0];    // 'nfuncs' elements.
 } UDFSpec;
