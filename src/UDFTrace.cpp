@@ -46,7 +46,7 @@ static REG convertRegId(int udf_reg)
     return REG_RAX;
 }
 
-static ADDRINT getArg(CONTEXT* ctx, UDFType* ty)
+static ADDRINT getArg(CONTEXT* ctx, UDFArg* ty)
 {
     if (ty->loc == UDF_STACK) {
         cerr << "Cannot handle stack argument" << endl;
@@ -67,18 +67,18 @@ VOID handleDirectCall(CONTEXT* ctx, VOID* v)
 
     for (int i = 0; i < UDF_ARG_MAX; i ++)
     {
-        if (func->args[i].kind == UDF_VOID)
+        if (func->args[i].type == UDF_VOID)
             break;
         if (i > 0)
             of << ", ";
-        switch (func->args[i].kind)
+        switch (func->args[i].type)
         {
             case UDF_I64:
             case UDF_U64:
                 of << getArg(ctx, &func->args[i]);
                 break;
             default:
-                cerr << "Cannot handle arg type " << func->args[i].kind << endl;
+                cerr << "Cannot handle arg type " << func->args[i].type << endl;
                 return;
         }
     }
@@ -119,7 +119,7 @@ VOID Trace(TRACE trace, VOID* v)
 
 int main(int argc, char *argv[])
 {
-    assert(sizeof(UDFType) == 8 || "UDFType is 8 bytes long");
+    assert(sizeof(UDFArg) == 8 || "UDFArg is 8 bytes long");
     assert(sizeof(UDFFunc) == 64 || "UDFFunc is 64 bytes long");
 
     if(PIN_Init(argc, argv))
@@ -129,11 +129,11 @@ int main(int argc, char *argv[])
     UDFSpec* spec = (UDFSpec*) malloc(sizeof(UDFSpec) + nfuncs * sizeof(UDFFunc));
     spec->nfuncs = nfuncs;
     spec->funcs[0].addr = 0x400526; // test2 / fibo()
-    spec->funcs[0].ret.kind = UDF_I64;
+    spec->funcs[0].ret.type = UDF_I64;
     spec->funcs[0].ret.loc = UDF_RAX;
     for (int i = 0; i < UDF_ARG_MAX; i ++)
-        spec->funcs[0].args[i].kind = UDF_VOID;
-    spec->funcs[0].args[0].kind = UDF_I64;
+        spec->funcs[0].args[i].type = UDF_VOID;
+    spec->funcs[0].args[0].type = UDF_I64;
     spec->funcs[0].args[0].loc = UDF_RDI;
 
     of << showbase << hex;

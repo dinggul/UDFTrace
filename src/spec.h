@@ -10,7 +10,7 @@ typedef enum {
     UDF_U64  = 5,
     UDF_STR  = 6,
     UDF_MEM  = 7,
-} UDFTypeKind;
+} UDFArgType;
 
 typedef enum {
     UDF_STACK = 0,
@@ -30,21 +30,21 @@ typedef enum {
     UDF_R13   = 14,
     UDF_R14   = 15,
     UDF_R15   = 16,
-} UDFTypeLoc;
+} UDFArgLoc;
 
 typedef struct {
-    uint8_t kind;   // argument type.
+    uint8_t type;   // argument type.
     uint8_t loc;    // argument location (stack or register).
     uint16_t ofs;   // used for location = stack arguments.
     uint32_t size;  // used for type = memory arguments.
-} UDFType;
+} UDFArg;
 
 #define UDF_ARG_MAX 6
 
 typedef struct {
     uint64_t addr;
-    UDFType ret;
-    UDFType args[UDF_ARG_MAX]; // Maximum 6 arguments.
+    UDFArg ret;
+    UDFArg args[UDF_ARG_MAX]; // Maximum 6 arguments.
 } UDFFunc;
 
 typedef struct {
