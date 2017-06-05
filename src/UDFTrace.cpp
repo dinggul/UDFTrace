@@ -85,6 +85,16 @@ VOID showcall(CONTEXT* ctx, VOID* v)
     of << ")" << endl;
 }
 
+static UDFFunc* lookup_spec(UDFSpec* spec, ADDRINT addr)
+{
+    for (unsigned int i = 0; i < spec->nfuncs; i ++) {
+        if (spec->funcs[i].addr == addr) {
+            return &spec->funcs[i];
+        }
+    }
+    return NULL;
+}
+
 VOID Trace(TRACE trace, VOID* v)
 {
     UDFSpec* spec = (UDFSpec*)v;
@@ -92,13 +102,12 @@ VOID Trace(TRACE trace, VOID* v)
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
         ADDRINT addr = BBL_Address(bbl);
-        for (unsigned int i = 0; i < spec->nfuncs; i ++) {
-            if (spec->funcs[i].addr == addr) {
-                BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)showcall,
-                        IARG_CONST_CONTEXT,
-                        IARG_PTR, (VOID*)&spec->funcs[i],
-                        IARG_END);
-            }
+        UDFFunc* func = lookup_spec(spec, addr);
+        if (func != NULL) {
+            BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)showcall,
+                    IARG_CONST_CONTEXT,
+                    IARG_PTR, func,
+                    IARG_END);
         }
     }
 }
