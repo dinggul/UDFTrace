@@ -139,9 +139,14 @@ def save_debug_dump(debug_info):
 
         # start of dumping
 
-        fp.write(pack('<Q', di[1])) # address
+        fp.write(pack('<Q', di[1]))                                 # address
+        fp.write(mk_UDFArg(di[3]))                                  # ret
 
-        fp.write(pack('<'
+        for nth_arg in xrange(1, MAX_UDF_ARG+1):                    # args
+            if len(di[2]) >= nth_arg:
+                fp.write(mk_UDFArg(di[2][nth_arg-1]), nth_arg)
+            else:
+                fp.write(mk_UDFArg('void', nth_arg)
 
         # end of dumping
 
