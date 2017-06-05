@@ -42,8 +42,57 @@ ENUMS = [
     r'mem\((0x[a-f0-9])+\)',
 ]
 
+def mk_UDFArg(arg_type, nth_arg=0): # nth_arg == 0 for return value
+    '''
+    typedef struct {
+        uint8_t type;   // argument type.
+        uint8_t loc;    // argument location (stack or register).
+        uint16_t ofs;   // used for location = stack arguments.
+        uint32_t size;  // used for type = memory arguments.
+    } UDFArg;
+    '''
+    assert nth_arg <= UDF_ARG_MAX
+    matching_res = [0 if i is None else 1 for i in
+                        map(lambda x: re.match(x, arg_type), ENUMS)]
+    type_enum = matching_res.find(1)
+
+    # set loc following linux x64 argument passing
+    loc = 1
+    if nth_arg == 1:
+        loc = 5         # rdi
+    elif nth_arg == 2:
+        loc = 6         # rsi
+    elif nth_arg == 3:
+        loc = 4         # rdx
+    elif nth_arg == 4:
+        loc = 3         # rcx
+    elif nth_arg == 5:
+        loc = 9         # r8
+    elif nth_arg == 6:
+        loc = 10        # r9
+
+    # set size for dumping memory
+    size = 0
+    if type_enum in [7, 8]:
+        size_val_str = re.findall(ENUMS[type_enum], arg_type)[0]
+
+        if size_val_str.startswith('0x'):
+            size = int(size_val_str, 16)
+            type_enum -= 1
+        else:
+            size = int(size_val_str)
+
+    res = ''
+    res += pack('<B', type_enum)    # type
+    res += pack('<B', loc)          # loc
+    res += pack('<H', 0)            # ofs
+    res += pack('<I', size)         # size
+
+    return res
+
 def save_debug_dump(debug_info):
     fp = open(DEBUG_DUMP, 'wb')
+    fp.write(pack("<Q", len(debug_info)))
     for di in debug_info:
         # start of format checking
         if len(di) != 4:
@@ -89,6 +138,10 @@ def save_debug_dump(debug_info):
         # end of format checking
 
         # start of dumping
+
+        fp.write(pack('<Q', di[1])) # address
+
+        fp.write(pack('<'
 
         # end of dumping
 
