@@ -84,6 +84,10 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
             case UDF_U64:
                 of << hex << getArg(ctx, &func->args[i]) << dec;
                 break;
+            case UDF_STR:
+                of << "\"" << (const char*)getArg(ctx, &func->args[i]) << "\"";
+                break;
+            case UDF_MEM:
             default:
                 cerr << "Cannot handle arg type " << (int)func->args[i].type << endl;
                 return;
