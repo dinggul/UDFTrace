@@ -61,7 +61,7 @@ static inline char hexDigit(int n)
     if (n < 10)
         return '0' + n;
     else
-        return 'a' + n;
+        return 'a' + (n - 10);
 }
 
 char* hexEncodedMemory(const void* addr, int count)
@@ -79,7 +79,7 @@ char* hexEncodedMemory(const void* addr, int count)
 VOID handleCall(CONTEXT* ctx, VOID* v)
 {
     UDFFunc* func = (UDFFunc*)v;
-    of << "sub_" << func->addr << " (";
+    of << "sub_" << hex << func->addr << dec << " (";
     char* hexStr = NULL;
 
     for (int i = 0; i < UDF_ARG_MAX; i ++)
