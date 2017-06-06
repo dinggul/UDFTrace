@@ -79,7 +79,8 @@ char* hexEncodedMemory(const void* addr, int count)
 VOID handleCall(CONTEXT* ctx, VOID* v)
 {
     UDFFunc* func = (UDFFunc*)v;
-    of << "sub_" << hex << func->addr << dec << " (";
+    of << "- name: " << "sub_" << hex << func->addr << dec << endl;
+    of << "  args: [";
     char* hexStr = NULL;
 
     for (int i = 0; i < UDF_ARG_MAX; i ++)
@@ -120,7 +121,7 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
                 return;
         }
     }
-    of << ")" << endl;
+    of << "]" << endl;
 }
 
 static UDFFunc* lookupSpec(UDFSpec* spec, ADDRINT addr)
