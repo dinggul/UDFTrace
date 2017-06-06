@@ -56,7 +56,7 @@ static ADDRINT getArg(CONTEXT* ctx, UDFArg* ty)
     }
 }
 
-VOID handleDirectCall(CONTEXT* ctx, VOID* v)
+VOID handleCall(CONTEXT* ctx, VOID* v)
 {
     UDFFunc* func = (UDFFunc*)v;
     of << "sub_" << func->addr << " (";
@@ -97,18 +97,14 @@ VOID Trace(TRACE trace, VOID* v)
 
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
-        INS tail = BBL_InsTail(bbl);
-        if (INS_IsDirectCall(tail)) {
-            ADDRINT target = INS_DirectBranchOrCallTargetAddress(tail);
-            UDFFunc* func = lookupSpec(spec, target);
-            if (func) {
-                INS_InsertCall(tail, IPOINT_BEFORE,
-                        (AFUNPTR)handleDirectCall,
-                        IARG_CONST_CONTEXT,
-                        IARG_PTR, func,
-                        IARG_END);
-            }
-
+        ADDRINT addr = BBL_Address(bbl);
+        UDFFunc* func = lookupSpec(spec, addr);
+        if (func) {
+            BBL_InsertCall(bbl, IPOINT_BEFORE,
+                    (AFUNPTR)handleCall,
+                    IARG_CONST_CONTEXT,
+                    IARG_PTR, func,
+                    IARG_END);
         }
     }
 }
