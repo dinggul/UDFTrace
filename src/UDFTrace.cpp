@@ -69,9 +69,20 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
             of << ", ";
         switch (func->args[i].type)
         {
+            case UDF_CHAR:
+                of << (char)(getArg(ctx, &func->args[i]) & 0xff);
+                break;
+            case UDF_I32:
+                of << (getArg(ctx, &func->args[i]) & 0xffffffff);
+                break;
+            case UDF_U32:
+                of << hex << (getArg(ctx, &func->args[i]) & 0xffffffff) << dec;
+                break;
             case UDF_I64:
-            case UDF_U64:
                 of << getArg(ctx, &func->args[i]);
+                break;
+            case UDF_U64:
+                of << hex << getArg(ctx, &func->args[i]) << dec;
                 break;
             default:
                 cerr << "Cannot handle arg type " << func->args[i].type << endl;
@@ -155,7 +166,7 @@ int main(int argc, char *argv[])
     if (spec == NULL)
         return Usage();
 
-    of << showbase << hex;
+    of << showbase;
 
     TRACE_AddInstrumentFunction(Trace, spec);
 
