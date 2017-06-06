@@ -32,4 +32,4 @@
 ../../../exe/astar_base.gcc43-64bit lake.cfg
 
 ./benchspec/CPU2006/483.xalancbmk/exe
-./Xalan_base.gcc43-64bit -v ../data/ref/input/t5.xml ../data/ref/input/xalanc.xsl
+./Xalan_base.gcc43-64bit -v ../data/test/input/test.xml ../data/test/input/xalanc.xsl
