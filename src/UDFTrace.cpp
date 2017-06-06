@@ -56,10 +56,31 @@ static ADDRINT getArg(CONTEXT* ctx, UDFArg* ty)
     }
 }
 
+static inline char hexDigit(int n)
+{
+    if (n < 10)
+        return '0' + n;
+    else
+        return 'a' + n;
+}
+
+char* hexEncodedMemory(const void* addr, int count)
+{
+    char* encoded = (char*) malloc(count * 2 + 1);
+    for (int i=0; i<count; i++) {
+        unsigned char n = ((unsigned char*)addr)[i];
+        encoded[i*2] = hexDigit((n >> 4) & 0xf);
+        encoded[i*2 + 1] = hexDigit(n & 0xf);
+    }
+    encoded[2*count] = 0;
+    return encoded;
+}
+
 VOID handleCall(CONTEXT* ctx, VOID* v)
 {
     UDFFunc* func = (UDFFunc*)v;
     of << "sub_" << func->addr << " (";
+    char* hexStr = NULL;
 
     for (int i = 0; i < UDF_ARG_MAX; i ++)
     {
@@ -88,6 +109,12 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
                 of << "\"" << (const char*)getArg(ctx, &func->args[i]) << "\"";
                 break;
             case UDF_MEM:
+                hexStr = hexEncodedMemory(
+                        (const void*)getArg(ctx, &func->args[i]),
+                        func->args[i].size);
+                of << "\"" << hexStr << "\"";
+                free(hexStr);
+                break;
             default:
                 cerr << "Cannot handle arg type " << (int)func->args[i].type << endl;
                 return;
