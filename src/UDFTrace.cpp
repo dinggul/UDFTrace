@@ -85,7 +85,7 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
                 of << hex << getArg(ctx, &func->args[i]) << dec;
                 break;
             default:
-                cerr << "Cannot handle arg type " << func->args[i].type << endl;
+                cerr << "Cannot handle arg type " << (int)func->args[i].type << endl;
                 return;
         }
     }
