@@ -163,11 +163,13 @@ VOID Trace(TRACE trace, VOID* v)
         ADDRINT addr = BBL_Address(bbl);
         UDFFunc* func = lookupSpec(spec, addr);
         if (func) {
+#ifndef NO_INSERT
             BBL_InsertCall(bbl, IPOINT_BEFORE,
                     (AFUNPTR)handleCall,
                     IARG_CONST_CONTEXT,
                     IARG_PTR, func,
                     IARG_END);
+#endif
         }
     }
 }

@@ -16,3 +16,6 @@ noargs:
 
 noprint:
 	make "CXX=g++ -DNO_PRINT"
+
+noinsert:
+	make "CXX=g++ -DNO_INSERT"
