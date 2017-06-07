@@ -42,7 +42,7 @@ static REG convertRegId(int udf_reg)
     return REG_RAX;
 }
 
-static ADDRINT getArg(CONTEXT* ctx, UDFArg* ty)
+static ADDRINT UNUSED getArg(CONTEXT* ctx, UDFArg* ty)
 {
     if (ty->loc == UDF_STACK) {
         cerr << "Cannot handle stack argument" << endl;
@@ -78,6 +78,7 @@ char* hexEncodedMemory(const void* addr, int count)
 
 VOID handleCall(CONTEXT* ctx, VOID* v)
 {
+#ifndef NO_ARGS
     UDFFunc* func = (UDFFunc*)v;
     of << "- name: " << "sub_" << hex << func->addr << dec << endl;
     of << "  args: [";
@@ -122,6 +123,7 @@ VOID handleCall(CONTEXT* ctx, VOID* v)
         }
     }
     of << "]" << endl;
+#endif
 }
 
 static UDFFunc* lookupSpec(UDFSpec* spec, ADDRINT addr)
@@ -200,7 +202,9 @@ int main(int argc, char *argv[])
 
     of << showbase;
 
+#ifndef NO_INST
     TRACE_AddInstrumentFunction(Trace, spec);
+#endif
 
     PIN_StartProgram();
     return 0;
