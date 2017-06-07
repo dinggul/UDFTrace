@@ -13,3 +13,6 @@ noinst:
 
 noargs:
 	make "CXX=g++ -DNO_ARGS"
+
+noprint:
+	make "CXX=g++ -DNO_PRINT"

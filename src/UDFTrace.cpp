@@ -11,7 +11,25 @@ using namespace std;
 
 KNOB<string> KnobInputFile(KNOB_MODE_WRITEONCE, "pintool",
         "i", "", "Trace spec file name");
-static ostream& of = cout;
+
+class TraceDump
+{
+public:
+    template<typename T> TraceDump& operator<<(const T& v) {
+#ifndef NO_PRINT
+        cout << v;
+#endif
+        return *this;
+    }
+    TraceDump& operator<<(ostream& (*F)(ostream&)) {
+#ifndef NO_PRINT
+        F(cout);
+#endif
+        return *this;
+    }
+};
+
+static TraceDump of;
 
 INT32 Usage() {
     cerr << "User Defined Function Trace (UDFTrace)" << endl;
